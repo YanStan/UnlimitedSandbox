@@ -1,0 +1,11 @@
+Island Burst Stage 4 - parallel tile queue
+- Up to maxConcurrentBuilds independent island tiles may have Burst jobs in flight.
+- At most maxBuildsPerFrame new tiles are scheduled per frame.
+- At most maxMeshUploadsPerFrame completed tiles are uploaded per frame.
+- No blocking Complete() during Update; only completed jobs are harvested.
+- Pending keys prevent duplicate scheduling across periodic queue rebuilds.
+- Stale results are discarded safely after their jobs complete.
+- All pending jobs are completed and buffers disposed on destruction.
+- No changes to seed precision fix, noise sampling, mesh topology, LOD sizes, colliders, or wireframe.
+- Note: Perlin noise input is still computed on the main thread when scheduling.
+- Unity compilation/performance not verified; back up Stage 3 first.
