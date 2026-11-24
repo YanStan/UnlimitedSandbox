@@ -52,19 +52,6 @@ public sealed class FloatingIslandMesh : MonoBehaviour
         if (islandMaterial != null) { renderer.sharedMaterial = islandMaterial; return; }
         if (useTerrainMaterial)
         {
-            var terrains = FindObjectsByType<TerrainGenerator>(FindObjectsSortMode.None);
-            foreach (var terrain in terrains)
-            {
-                var terrainRenderer = terrain.GetComponent<MeshRenderer>();
-                if (terrainRenderer != null && terrainRenderer.sharedMaterial != null &&
-                    terrainRenderer.sharedMaterial.shader != null &&
-                    terrainRenderer.sharedMaterial.shader.name == "Unlimited/TriplanarGrass")
-                {
-                    renderer.sharedMaterial = terrainRenderer.sharedMaterial;
-                    return;
-                }
-            }
-        }
         Shader shader = Shader.Find("Unlimited/TriplanarGrass");
         if (shader == null)
         {
@@ -73,7 +60,9 @@ public sealed class FloatingIslandMesh : MonoBehaviour
         }
         generatedMaterial = new Material(shader) { name = "FloatingIsland_TriplanarGrass" };
         renderer.sharedMaterial = generatedMaterial;
+        }
     }
+
     private void OnDestroy()
     {
         if (ownedMesh != null) Destroy(ownedMesh);

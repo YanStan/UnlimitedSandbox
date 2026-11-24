@@ -20,7 +20,7 @@ public sealed class FloatingIslandStreamer : MonoBehaviour
     [Min(0f)] public float unloadMargin = 150f;
     [Min(0.05f)] public float updateInterval = 0.5f;
     [Range(1, 16)] public int maxIslandsPerUpdate = 2;
-    [Header("Spatial LOD (TerrainGenerator sizes 4 / 16 / 64)")]
+    [Header("Spatial LOD (4 / 16 / 64 m)")]
     public bool useTerrainChunkLod = true;
     [Min(0f)] public float spatialFineDistance = 32f;
     [Min(0f)] public float spatialFastDistance = 100f;
@@ -135,12 +135,6 @@ public sealed class FloatingIslandStreamer : MonoBehaviour
                 spatial.player = player; spatial.surfaceMaterial = islandMaterial;
                 if (spatial.surfaceMaterial == null)
                 {
-                    var terrain = FindFirstObjectByType<TerrainGenerator>();
-                    if (terrain != null)
-                    {
-                        var tr = terrain.GetComponent<MeshRenderer>();
-                        if (tr != null) spatial.surfaceMaterial = tr.sharedMaterial;
-                    }
                     if (spatial.surfaceMaterial == null)
                     {
                         Shader shader = Shader.Find("Unlimited/TriplanarGrass");

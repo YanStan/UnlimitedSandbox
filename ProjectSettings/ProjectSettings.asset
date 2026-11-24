@@ -498,7 +498,7 @@ PlayerSettings:
     m_Automatic: 1
   - m_BuildTarget: AndroidPlayer
     m_APIs: 150000000b000000i
-    m_Automatic: 1
+    m_Automatic: 0
   m_DefaultShaderChunkSizeInMB: 16
   m_DefaultShaderChunkCount: 0
   openGLRequireES31: 0
@@ -797,7 +797,9 @@ PlayerSettings:
   webWasm2023: 1
   webEnableSubmoduleStrippingCompatibility: 0
   webProgressiveAssetLoading: 0
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    Android: MAPMAGIC2;MM_NATIVE
+    Standalone: MAPMAGIC2;MM_NATIVE
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
