@@ -59,6 +59,11 @@ public class PlayerController : MonoBehaviour
         Debug.Log("PlayerController initialized. Mobile controls: " + mobile);
     }
 
+    public void ResetVerticalVelocityAfterBuild()
+    {
+        verticalVelocity = 0f;
+    }
+
     private void Update()
     {
         if (playerCamera == null) return;

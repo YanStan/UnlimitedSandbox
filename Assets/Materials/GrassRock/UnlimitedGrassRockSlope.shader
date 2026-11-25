@@ -2,6 +2,10 @@ Shader "Unlimited/Grass Rock Slope Blend"
 {
     Properties
     {
+        [HideInInspector] _HybridHoleEnabled ("Hybrid holes", Float) = 0
+        [HideInInspector] _HybridHoleRect ("Hybrid rect", Vector) = (0,0,1,1)
+        [HideInInspector] _HybridHoleResolution ("Hybrid resolution", Float) = 1
+        [HideInInspector] _HybridHoleTexture ("Hybrid holes texture", 2D) = "white" {}
         _RockStart ("Rock Starts At Slope Degrees", Range(0,89)) = 30
         _RockEnd ("Full Rock At Slope Degrees", Range(1,90)) = 55
         _TransitionNoise ("Boundary Irregularity Degrees", Range(0,20)) = 4
@@ -27,7 +31,11 @@ Shader "Unlimited/Grass Rock Slope Blend"
             #pragma multi_compile_fog
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+            TEXTURE2D(_HybridHoleTexture);
             CBUFFER_START(UnityPerMaterial)
+                float _HybridHoleEnabled;
+                float4 _HybridHoleRect;
+                float _HybridHoleResolution;
                 float _RockStart;
                 float _RockEnd;
                 float _TransitionNoise;
@@ -234,20 +242,19 @@ Shader "Unlimited/Grass Rock Slope Blend"
             half4 Frag(Varyings input) : SV_Target
             {
                 float3 P = input.worldPos;
+                if (_HybridHoleEnabled > 0.5) {
+                    float2 uv = (P.xz - _HybridHoleRect.xy) / _HybridHoleRect.zw;
+                    int2 pixel = (int2)clamp(floor(uv * _HybridHoleResolution), 0, _HybridHoleResolution - 1);
+                    clip(LOAD_TEXTURE2D(_HybridHoleTexture, pixel).r - 0.5);
+                }
                 float3 N = normalize(input.worldNormal);
                 float3 delta = GetCameraPositionWS() - P;
-                float ds = dot(delta, delta);
-                float endDistance = max(_FarEnd, _FarStart + 1.0);
-                float fade = smoothstep(_FarStart * _FarStart, endDistance * endDistance, ds);
                 float startAngle = min(_RockStart, _RockEnd - 0.1);
                 float endAngle = max(startAngle + 0.1, _RockEnd);
                 float w = 1.0 - smoothstep(cos(radians(endAngle)), cos(radians(startAngle)), N.y);
                 Light ml = GetMainLight();
                 float3 L = normalize(ml.direction);
                 float diffuse = saturate(dot(N,L));
-                float3 farLit = lerp(float3(0.245,0.335,0.095), float3(0.33,0.32,0.29)*_RockBrightness,w)*(0.38+0.72*diffuse);
-                UNITY_BRANCH
-                if (fade >= 1.0) return half4(MixFog(farLit,input.fogFactor),1);
                 float margin = max(0.0,_TransitionNoise);
                 UNITY_BRANCH
                 if (N.y >= cos(radians(max(0.0,startAngle-margin)))) w=0.0;
@@ -269,7 +276,7 @@ Shader "Unlimited/Grass Rock Slope Blend"
                 if (w > 0.0) {
                     rockLit = RockColor(P)*_RockBrightness*(0.32+0.68*diffuse)*(0.32+0.68*saturate(N.y)) + (pow(nh,75.0)*0.009).xxx;
                 }
-                return half4(MixFog(lerp(lerp(grassLit,rockLit,w),farLit,fade),input.fogFactor),1);
+                return half4(MixFog(lerp(grassLit,rockLit,w),input.fogFactor),1);
             }
             ENDHLSL
         }

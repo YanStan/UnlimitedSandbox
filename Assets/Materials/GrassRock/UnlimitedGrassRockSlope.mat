@@ -31,7 +31,5 @@ Material:
     - _RockEnd: 55
     - _TransitionNoise: 4
     - _TransitionScale: 0.035
-    - _FarStart: 120
-    - _FarEnd: 180
     m_Colors: []
   m_BuildTextureStacks: []

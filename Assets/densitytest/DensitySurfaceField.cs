@@ -12,6 +12,7 @@ namespace Unlimited.DensityTest
         WallCut
     }
 
+    [System.Serializable]
     public struct SurfacePoint
     {
         public float y;
@@ -29,6 +30,19 @@ namespace Unlimited.DensityTest
         public readonly List<SurfacePoint>[] surfaceCache;
 
         private readonly HashSet<Vector3Int> sharpCells = new HashSet<Vector3Int>();
+
+        public Vector3Int[] CopySharpCells()
+        {
+            var copy = new Vector3Int[sharpCells.Count];
+            sharpCells.CopyTo(copy);
+            return copy;
+        }
+
+        public void RestoreSharpCells(Vector3Int[] cells, int shiftY)
+        {
+            sharpCells.Clear();
+            foreach (var cell in cells) sharpCells.Add(new Vector3Int(cell.x, cell.y + shiftY, cell.z));
+        }
 
         public bool HasSharpCells => sharpCells.Count != 0;
 

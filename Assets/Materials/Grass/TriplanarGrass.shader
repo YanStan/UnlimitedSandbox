@@ -3,6 +3,10 @@ Shader "Unlimited/TriplanarGrass"
 {
     Properties
     {
+        [HideInInspector] _HybridHoleEnabled ("Hybrid holes", Float) = 0
+        [HideInInspector] _HybridHoleRect ("Hybrid rect", Vector) = (0,0,1,1)
+        [HideInInspector] _HybridHoleResolution ("Hybrid resolution", Float) = 1
+        [HideInInspector] _HybridHoleTexture ("Hybrid holes texture", 2D) = "white" {}
     }
 
     SubShader
@@ -32,6 +36,12 @@ Shader "Unlimited/TriplanarGrass"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
+            TEXTURE2D(_HybridHoleTexture);
+            CBUFFER_START(UnityPerMaterial)
+                float _HybridHoleEnabled;
+                float4 _HybridHoleRect;
+                float _HybridHoleResolution;
+            CBUFFER_END
             struct Attributes
             {
                 float3 positionOS : POSITION;
@@ -100,6 +110,11 @@ Shader "Unlimited/TriplanarGrass"
             {
                 float3 N = normalize(input.worldNormal);
                 float3 P = input.worldPos;
+                if (_HybridHoleEnabled > 0.5) {
+                    float2 uv = (P.xz - _HybridHoleRect.xy) / _HybridHoleRect.zw;
+                    int2 pixel = (int2)clamp(floor(uv * _HybridHoleResolution), 0, _HybridHoleResolution - 1);
+                    clip(LOAD_TEXTURE2D(_HybridHoleTexture, pixel).r - 0.5);
+                }
 
                 // Triplanar weights.
                 float3 weights = pow(abs(N), float3(4.0, 4.0, 4.0));
