@@ -1,0 +1,1 @@
+Converted GLB geometry to OBJ, merged material primitives, removed fallen maple leaves; procedural replacement materials. Source: vinish.dev, CC BY 4.0.

@@ -232,6 +232,8 @@ namespace Unlimited.HybridWorld
                 var hits=Physics.RaycastAll(cam.transform.position,cam.transform.forward,12f,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore);
                 Array.Sort(hits,(a,b)=>a.distance.CompareTo(b.distance));
                 foreach(var hit in hits) {
+                    var tree = hit.collider.GetComponentInParent<Unlimited.Vegetation.TreeDamagePreview>();
+                    if (tree != null) { if (dig) tree.Hit(); return; }
                     foreach(var w in patches) if(w.patch && hit.collider.transform.IsChildOf(w.patch.transform)) { DigAcross(hit.point,build); return; }
                     if(hit.collider is TerrainCollider) { targetPoint=hit.point; break; }
                 }
